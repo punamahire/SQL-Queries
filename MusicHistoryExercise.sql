@@ -5,7 +5,7 @@ select * from Genre;
 select * from Artist order by ArtistName;
 
 /* query 3 */
-select s.Title, a.ArtistName 
+select s.*, a.ArtistName 
 from Song s 
 left join Artist a 
 on s.ArtistId = a.Id;
@@ -17,21 +17,27 @@ inner join Album al
 on al.ArtistId = ar.Id 
 inner join Genre g 
 on al.GenreId = g.Id 
-where g.Id = 1;
+where g.Name = 'Soul';
 
 /* query 5 */
-select ar.ArtistName 
+select distinct ar.ArtistName 
 from Artist ar 
 left join Album al 
 on al.ArtistId = ar.Id 
 left join Genre g 
 on al.GenreId = g.Id 
-where g.Id = 2 or g.Id = 4;
+where g.Name = 'Jazz' or g.Name = 'Rock';
 
 /* query 6 */
 select al.Title 
 from Album al 
 where not exists (select * from Song s where s.AlbumId = al.Id);
+
+/* query 6 */
+select al.Title
+from Album al
+left join song s on s.AlbumId = al.Id
+where s.Id is null;
 
 /* query 7 */
 INSERT INTO Artist (ArtistName, YearEstablished) VALUES ('Justin Bieber', '2009');
@@ -58,10 +64,22 @@ select COUNT(s.Title) as SongsInAlbum
 from Song s
 Group by s.AlbumId;
 
+/* query 11 */
+select al.Title, COUNT(s.Id) as NumOfSongsByArtist
+from Album al
+left join song s on s.AlbumId = al.Id
+Group by al.Id, al.Title;
+
 /* query 12 */
 select COUNT(s.Title) as NumOfSongsByArtist
 from Song s
 Group by s.ArtistId;
+
+/* query 12 */
+select ar.ArtistName, COUNT(s.Id) as NumOfSongsByArtist
+from Artist ar
+left join Song s on s.ArtistId = ar.Id
+Group by ar.Id, ar.ArtistName;
 
 /* query 13 */
 select COUNT(s.Title) as NumOfSongsFromGenre
@@ -69,17 +87,29 @@ from Song s
 Group by s.GenreId;
 
 /* query 14 */
-select COUNT(ar.ArtistName)
+select COUNT(ar.ArtistName) as 'Records With Multiple Labels'
 from Artist ar
  left join Album al
 on al.ArtistId = ar.Id
 group by al.Label
 having COUNT(al.Label) > 1;
 
+/* query 14 */
+select ar.ArtistName, COUNT(distinct al.Label) as 'Number of Albums'
+from Artist ar
+join Album al on al.ArtistId = ar.Id
+Group by ar.ArtistName
+having COUNT(distinct al.Label) > 1;
+
 /* query 15 */
 select top 1 percent al.Title, al.AlbumLength
 from Album al
 order by al.AlbumLength desc;
+
+/* query 15 */
+select top 1 * 
+from Album 
+order by AlbumLength desc;
 
 /* query 16 */
 select top 1 percent s.Title, s.SongLength
