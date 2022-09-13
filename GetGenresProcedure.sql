@@ -1,0 +1,5 @@
+﻿CREATE PROCEDURE GetAllGenres    
+AS   
+
+SELECT DISTINCT g.Name 
+FROM Genre g;

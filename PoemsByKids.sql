@@ -94,24 +94,24 @@ left join Emotion e on e.Id = pe.EmotionId
 where e.Name = 'Sadness';
 
 -- 17. How many poems are not associated with any emotion?
-select COUNT(p.Id) as 'Number of Poems with no emotions'
-from Poem p
-left join PoemEmotion pe on pe.PoemId = p.Id
-left join Emotion e on e.Id = pe.EmotionId
-where e.Name = NULL
-Group by e.Name
-Order by p.Id;
+SELECT COUNT(p.Id) as 'Number of Poems with no emotions' 
+FROM Poem p
+LEFT JOIN PoemEmotion pe ON pe.PoemId = p.Id
+WHERE pe.PoemId IS NULL;
+
+select COUNT(p.Id) as 'Number of Poems with no emotions' from Poem p where p.Id not in (select PoemId from PoemEmotion);
+
+-- select * from Poem p where p.Id not in (select PoemId from PoemEmotion);
 
 -- 18. Which emotion is associated with the least number of poems?
-select top 5 e.Name, COUNT(p.Id) as 'Number of Poems' 
-from Poem p
-left join PoemEmotion pe on pe.PoemId = p.Id
-left join Emotion e on e.Id = pe.EmotionId
+select top 1 e.Name, COUNT(pe.PoemId) as 'Number of Poems' 
+from PoemEmotion pe
+join Emotion e on e.Id = pe.EmotionId
 Group by e.Name
-order by MIN(p.Id);
+order by COUNT(pe.PoemId);
 
 -- 19. Which grade has the largest number of poems with an emotion of joy?
-select top 1 gr.Name, COUNT(p.Id) as 'Number of Poems'
+select top 1 gr.Name, COUNT(p.Id) as 'Number of Poems with joy'
 from Poem p
 join PoemEmotion pe on pe.PoemId = p.Id
 join Emotion e on e.Id = pe.EmotionId
@@ -122,7 +122,7 @@ Group by gr.Name
 order by COUNT(p.Id) desc;
 
 -- 20. Which gender has the least number of poems with an emotion of fear?
-select g.Name 
+select top 1 g.Name, COUNT(p.Id) as 'Number of Poems with fear'
 from Poem p
 join PoemEmotion pe on pe.PoemId = p.Id
 join Emotion e on e.Id = pe.EmotionId
@@ -131,3 +131,11 @@ join Gender g on g.Id = a.GenderId
 where e.Name = 'Fear'
 Group by g.Name
 order by COUNT(p.Id);
+
+-- 21. How many authors are named "alice"
+select COUNT(a.Id) as 'Authors with name Alice'
+from Author a where a.Name = 'Alice';
+
+-- 22. find all the poems that contain the word "horse"
+select Poem.* 
+from Poem where Text like '%horse%';
